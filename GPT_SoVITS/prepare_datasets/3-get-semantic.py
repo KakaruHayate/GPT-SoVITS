@@ -4,7 +4,7 @@ inp_text = os.environ.get("inp_text")
 exp_name = os.environ.get("exp_name")
 i_part = os.environ.get("i_part")
 all_parts = os.environ.get("all_parts")
-os.environ["CUDA_VISIBLE_DEVICES"] = os.environ.get("_CUDA_VISIBLE_DEVICES")
+os.environ["MUSA_VISIBLE_DEVICES"] = os.environ.get("_MUSA_VISIBLE_DEVICES")
 opt_dir = os.environ.get("opt_dir")
 pretrained_s2G = os.environ.get("pretrained_s2G")
 s2config_path = os.environ.get("s2config_path")
@@ -38,10 +38,8 @@ semantic_path = "%s/6-name2semantic-%s.tsv" % (opt_dir, i_part)
 if os.path.exists(semantic_path) == False:
     os.makedirs(opt_dir, exist_ok=True)
 
-    if torch.cuda.is_available():
-        device = "cuda"
-    # elif torch.backends.mps.is_available():
-    #     device = "mps"
+if torch.musa.is_available():
+        device = "musa"
     else:
         device = "cpu"
     hps = utils.get_hparams_from_file(s2config_path)

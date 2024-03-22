@@ -7,6 +7,7 @@ sys.path.append(now_dir)
 from typing import Dict
 
 import torch
+import torch_musa
 from pytorch_lightning import LightningModule
 from AR.models.t2s_model_onnx import Text2SemanticDecoder
 from AR.modules.lr_schedulers import WarmupCosineLRSchedule

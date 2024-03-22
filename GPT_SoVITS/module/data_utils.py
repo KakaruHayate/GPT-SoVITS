@@ -5,6 +5,7 @@ import random
 import traceback
 import numpy as np
 import torch
+import torch_musa
 import torch.utils.data
 from tqdm import tqdm
 

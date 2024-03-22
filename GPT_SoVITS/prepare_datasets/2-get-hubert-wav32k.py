@@ -6,7 +6,7 @@ inp_wav_dir=                        os.environ.get("inp_wav_dir")
 exp_name=                           os.environ.get("exp_name")
 i_part=                             os.environ.get("i_part")
 all_parts=                          os.environ.get("all_parts")
-os.environ["CUDA_VISIBLE_DEVICES"]= os.environ.get("_CUDA_VISIBLE_DEVICES")
+os.environ["MUSA_VISIBLE_DEVICES"]= os.environ.get("_MUSA_VISIBLE_DEVICES")
 from feature_extractor import cnhubert
 opt_dir=                            os.environ.get("opt_dir")
 cnhubert.cnhubert_base_path=                os.environ.get("cnhubert_base_dir")
@@ -14,7 +14,7 @@ is_half=eval(os.environ.get("is_half","True"))
 
 import pdb,traceback,numpy as np,logging
 from scipy.io import wavfile
-import librosa,torch
+import librosa,torch,torch_musa
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 from my_utils import load_audio
@@ -48,10 +48,8 @@ os.makedirs(wav32dir,exist_ok=True)
 
 maxx=0.95
 alpha=0.5
-if torch.cuda.is_available():
-    device = "cuda:0"
-# elif torch.backends.mps.is_available():
-#     device = "mps"
+if torch.musa.is_available():
+    device = "musa"
 else:
     device = "cpu"
 model=cnhubert.get_model()

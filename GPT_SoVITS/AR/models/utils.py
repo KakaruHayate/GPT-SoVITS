@@ -1,6 +1,7 @@
 # modified from https://github.com/yangdongchao/SoundStorm/blob/master/soundstorm/s1/AR/models/utils.py
 # reference: https://github.com/lifeiteng/vall-e
 import torch
+import torch_musa
 import torch.nn.functional as F
 from typing import Tuple
 

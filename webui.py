@@ -2,6 +2,7 @@ import os,shutil,sys,pdb,re
 now_dir = os.getcwd()
 sys.path.insert(0, now_dir)
 import json,yaml,warnings,torch
+import torch_musa
 import platform
 import psutil
 import signal
@@ -55,29 +56,23 @@ from scipy.io import wavfile
 from tools.my_utils import load_audio
 from multiprocessing import cpu_count
 
-# os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到musa不支持的步骤时使用cpu
 
 n_cpu=cpu_count()
-           
-ngpu = torch.cuda.device_count()
+
+ngpu = torch.musa.device_count()
 gpu_infos = []
 mem = []
 if_gpu_ok = False
 
-# 判断是否有能用来训练和加速推理的N卡
-if torch.cuda.is_available() or ngpu != 0:
+if torch.musa.is_available():
     for i in range(ngpu):
-        gpu_name = torch.cuda.get_device_name(i)
-        if any(value in gpu_name.upper()for value in ["10","16","20","30","40","A2","A3","A4","P4","A50","500","A60","70","80","90","M4","T4","TITAN","L4","4060"]):
-            # A10#A100#V100#A40#P40#M40#K80#A4500
-            if_gpu_ok = True  # 至少有一张能用的N卡
-            gpu_infos.append("%s\t%s" % (i, gpu_name))
-            mem.append(int(torch.cuda.get_device_properties(i).total_memory/ 1024/ 1024/ 1024+ 0.4))
-# # 判断是否支持mps加速
-# if torch.backends.mps.is_available():
-#     if_gpu_ok = True
-#     gpu_infos.append("%s\t%s" % ("0", "Apple GPU"))
-#     mem.append(psutil.virtual_memory().total/ 1024 / 1024 / 1024) # 实测使用系统内存作为显存不会爆显存
+        if_gpu_ok = True
+        gpu_name = torch.musa.get_device_name(i)
+        gpu_infos.append("%s\t%s" % ("0", gpu_name))
+        mem.append(int(torch.musa.get_device_properties(i).total_memory/ 1024/ 1024/ 1024+ 0.4))
+        print("GPT-SoVITS running on MUSA!")
+    
 
 if if_gpu_ok and len(gpu_infos) > 0:
     gpu_info = "\n".join(gpu_infos)
@@ -181,7 +176,7 @@ def change_tts_inference(if_tts,bert_path,cnhubert_base_path,gpu_number,gpt_path
         os.environ["sovits_path"]=sovits_path if "/"in sovits_path else "%s/%s"%(SoVITS_weight_root,sovits_path)
         os.environ["cnhubert_base_path"]=cnhubert_base_path
         os.environ["bert_path"]=bert_path
-        os.environ["_CUDA_VISIBLE_DEVICES"]=gpu_number
+        os.environ["_MUSA_VISIBLE_DEVICES"]=gpu_number
         os.environ["is_half"]=str(is_half)
         os.environ["infer_ttswebui"]=str(webui_port_infer_tts)
         os.environ["is_share"]=str(is_share)
@@ -315,7 +310,7 @@ def open1Bb(batch_size,total_epoch,exp_name,if_dpo,if_save_latest,if_save_every_
         data["train_phoneme_path"]="%s/2-name2text.txt"%s1_dir
         data["output_dir"]="%s/logs_s1"%s1_dir
 
-        os.environ["_CUDA_VISIBLE_DEVICES"]=gpu_numbers.replace("-",",")
+        os.environ["_MUSA_VISIBLE_DEVICES"]=gpu_numbers.replace("-",",")
         os.environ["hz"]="25hz"
         tmp_config_path="%s/tmp_s1.yaml"%tmp
         with open(tmp_config_path, "w") as f:f.write(yaml.dump(data, default_flow_style=False))
@@ -396,7 +391,7 @@ def open1a(inp_text,inp_wav_dir,exp_name,gpu_numbers,bert_pretrained_dir):
                 {
                     "i_part": str(i_part),
                     "all_parts": str(all_parts),
-                    "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                    "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                     "is_half": str(is_half)
                 }
             )
@@ -454,7 +449,7 @@ def open1b(inp_text,inp_wav_dir,exp_name,gpu_numbers,ssl_pretrained_dir):
                 {
                     "i_part": str(i_part),
                     "all_parts": str(all_parts),
-                    "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                    "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                 }
             )
             os.environ.update(config)
@@ -502,7 +497,7 @@ def open1c(inp_text,exp_name,gpu_numbers,pretrained_s2G_path):
                 {
                     "i_part": str(i_part),
                     "all_parts": str(all_parts),
-                    "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                    "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                 }
             )
             os.environ.update(config)
@@ -564,7 +559,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                         {
                             "i_part": str(i_part),
                             "all_parts": str(all_parts),
-                            "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                            "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                         }
                     )
                     os.environ.update(config)
@@ -601,7 +596,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                     {
                         "i_part": str(i_part),
                         "all_parts": str(all_parts),
-                        "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                        "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                     }
                 )
                 os.environ.update(config)
@@ -630,7 +625,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                         {
                             "i_part": str(i_part),
                             "all_parts": str(all_parts),
-                            "_CUDA_VISIBLE_DEVICES": gpu_names[i_part],
+                            "_MUSA_VISIBLE_DEVICES": gpu_names[i_part],
                         }
                     )
                     os.environ.update(config)

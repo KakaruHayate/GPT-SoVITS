@@ -2,6 +2,7 @@ import math
 import os
 import random
 import torch
+import torch_musa
 from torch import nn
 import torch.nn.functional as F
 import torch.utils.data

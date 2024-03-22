@@ -1,6 +1,7 @@
 import sys,os
 
 import torch
+import torch_musa
 
 # 推理用的指定模型
 sovits_path = ""
@@ -17,8 +18,8 @@ pretrained_gpt_path = "GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=
 
 exp_root = "logs"
 python_exec = sys.executable or "python"
-if torch.cuda.is_available():
-    infer_device = "cuda"
+if torch.musa.is_available():
+    infer_device = "musa"
 else:
     infer_device = "cpu"
 
@@ -29,19 +30,8 @@ webui_port_subfix = 9871
 
 api_port = 9880
 
-if infer_device == "cuda":
-    gpu_name = torch.cuda.get_device_name(0)
-    if (
-            ("16" in gpu_name and "V100" not in gpu_name.upper())
-            or "P40" in gpu_name.upper()
-            or "P10" in gpu_name.upper()
-            or "1060" in gpu_name
-            or "1070" in gpu_name
-            or "1080" in gpu_name
-    ):
-        is_half=False
-
 if(infer_device=="cpu"):is_half=False
+if(infer_device=="musa"):is_half=False # 我没S4000，测不了
 
 class Config:
     def __init__(self):

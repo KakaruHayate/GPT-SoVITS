@@ -13,7 +13,7 @@
 `-dt` - `默认参考音频文本`
 `-dl` - `默认参考音频语种, "中文","英文","日文","zh","en","ja"`
 
-`-d` - `推理设备, "cuda","cpu"`
+`-d` - `推理设备, "musa","cpu"`
 `-a` - `绑定地址, 默认"127.0.0.1"`
 `-p` - `绑定端口, 默认9880, 可在 config.py 中指定`
 `-fp` - `覆盖 config.py 使用全精度`
@@ -113,6 +113,7 @@ sys.path.append("%s/GPT_SoVITS" % (now_dir))
 import signal
 from time import time as ttime
 import torch
+import torch_musa
 import librosa
 import soundfile as sf
 from fastapi import FastAPI, Request, HTTPException
@@ -132,7 +133,7 @@ import config as global_config
 
 g_config = global_config.Config()
 
-# AVAILABLE_COMPUTE = "cuda" if torch.cuda.is_available() else "cpu"
+# AVAILABLE_COMPUTE = "musa" if torch.musa.is_available() else "cpu"
 
 parser = argparse.ArgumentParser(description="GPT-SoVITS api")
 
@@ -143,7 +144,7 @@ parser.add_argument("-dr", "--default_refer_path", type=str, default="", help="�
 parser.add_argument("-dt", "--default_refer_text", type=str, default="", help="默认参考音频文本")
 parser.add_argument("-dl", "--default_refer_language", type=str, default="", help="默认参考音频语种")
 
-parser.add_argument("-d", "--device", type=str, default=g_config.infer_device, help="cuda / cpu")
+parser.add_argument("-d", "--device", type=str, default=g_config.infer_device, help="musa / cpu")
 parser.add_argument("-a", "--bind_addr", type=str, default="0.0.0.0", help="default: 0.0.0.0")
 parser.add_argument("-p", "--port", type=int, default=g_config.api_port, help="default: 9880")
 parser.add_argument("-fp", "--full_precision", action="store_true", default=False, help="覆盖config.is_half为False, 使用全精度")
@@ -481,7 +482,7 @@ def handle(refer_wav_path, prompt_text, prompt_language, text, text_language):
     sf.write(wav, audio_data, sampling_rate, format="wav")
     wav.seek(0)
 
-    torch.cuda.empty_cache()
+    torch.musa.empty_cache() #没测试，不保证能用
     return StreamingResponse(wav, media_type="audio/wav")
 
 

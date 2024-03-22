@@ -1,5 +1,6 @@
 import math
 import torch
+import torch_musa
 from torch.nn import functional as F
 
 

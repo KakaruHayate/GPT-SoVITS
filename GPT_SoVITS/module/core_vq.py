@@ -34,6 +34,7 @@ import typing as tp
 
 from einops import rearrange, repeat
 import torch
+import torch_musa
 from torch import nn
 import torch.nn.functional as F
 from tqdm import tqdm

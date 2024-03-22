@@ -11,6 +11,7 @@ import librosa
 import numpy as np
 from scipy.io.wavfile import read
 import torch
+import torch_musa
 import logging
 
 logging.getLogger("numba").setLevel(logging.ERROR)

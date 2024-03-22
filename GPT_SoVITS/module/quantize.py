@@ -11,6 +11,7 @@ import math
 import typing as tp
 
 import torch
+import torch_musa
 from torch import nn
 
 from module.core_vq import ResidualVectorQuantization

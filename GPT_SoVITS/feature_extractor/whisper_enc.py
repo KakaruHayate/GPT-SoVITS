@@ -1,4 +1,5 @@
 import torch
+import torch_musa
 
 
 def get_model():
