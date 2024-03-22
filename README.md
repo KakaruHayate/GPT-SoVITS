@@ -1,6 +1,6 @@
 # GPT-SoVITS-MUSA
 
-[原文档](./README.md)
+[原文档](./README_ori.md)
 
 *注意：本repo涉及设备目前仅在中国大陆发售，故仅提供中文文档*
 
