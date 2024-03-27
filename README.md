@@ -8,9 +8,9 @@
 
 ## 进度
 
-- [x] 预处理（在S70下会遇到显存问题）
+- [ ] ~预处理（在S70下会遇到显存问题）~
 - [ ] ~S1训练（lightning不支持，暂时无解）~
-- [ ] S2训练（显存不足本人无法测试）
+- [ ] ~S2训练（显存不足本人无法测试）~
 - [x] 推理
 
 *UVR5/ASR/API/GUI等组件未测试*
@@ -64,20 +64,16 @@ torch-2.0.0-cp39-cp39-linux_x86_64-S80_S3000.whl
 torch_musa-1.1.0-cp39-cp39-linux_x86_64-S80_S3000.whl
 ```
 
-修改文件名，将“_x86_64”后的"-S80_S3000"删除，之后使用pip命令安装
+修改文件名，将“_x86_64”后的"-S80_S3000"删除，之后使用pip命令安装，注意安装顺序
 
 ```
 pip install torch-2.0.0-cp39-cp39-linux_x86_64.whl
 torch_musa-1.1.0-cp39-cp39-linux_x86_64.whl
 ```
 
-**3.安装对应版本的torchaudio**
+**3.安装torchaudio**
 
-直接使用pip安装最新版本的torchaudio会覆盖前文安装的torch，请用以下命令安装torchaudio
-
-```
-pip install torchaudio==2.0.1
-```
+https://github.com/MooreThreads/torch_musa/issues/40#issuecomment-2017265237
 
 **4.安装环境**
 
