@@ -68,7 +68,7 @@ torch_musa-1.1.0-cp39-cp39-linux_x86_64-S80_S3000.whl
 
 ```
 pip install torch-2.0.0-cp39-cp39-linux_x86_64.whl
-torch_musa-1.1.0-cp39-cp39-linux_x86_64.whl
+pip install torch_musa-1.1.0-cp39-cp39-linux_x86_64.whl
 ```
 
 **3.安装torchaudio**
